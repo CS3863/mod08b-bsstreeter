@@ -10,12 +10,18 @@ public class UseData : MonoBehaviour
 
     List<Dictionary<string, object>> data; 
     public GameObject mySphere;//prefab
-    int cubeCount; //variable 
+    int rowCount; //variable 
+
+    private float startDelay = 1.0f;
+    private float timeInterval = 1.0f;
+    public object tempObj;
+    public float tempFloat;
+
 
     void Awake()
     {
 
-        data = CSVReader.Read("udata");//udata is the name of the csv file 
+        data = CSVReader.Read("testCO2");//udata is the name of the csv file 
 
         for (var i = 0; i < data.Count; i++)
         {
@@ -23,6 +29,7 @@ public class UseData : MonoBehaviour
             print("xco2 " + data[i]["xco2"] + " ");
 
         }
+        rowCount = 0;
 
 
     }//end Awake()
@@ -30,23 +37,24 @@ public class UseData : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        for (var i = 0; i < data.Count; i++)
-        {
-            object emis = data[i]["xco2"];//get age data
-            cubeCount += (int)emis;//convert age data to int and add to cubeCount
-            Debug.Log("cubeCount" +cubeCount);
-        }
+        if (rowCount <= 25990) { 
+        InvokeRepeating("SpawnObject", startDelay, timeInterval);
+    }
     }//end Start()
 
     // Update is called once per frame
-    void Update()
+    void SpawnObject()
     {
         //As long as cube count is not zero, instantiate prefab
-        while (cubeCount > 0)
-        {
-            Instantiate(mySphere);
-            cubeCount--;
-        }
+        tempObj = (data[rowCount]["xco2"]);
+        tempFloat = System.Convert.ToSingle(tempObj);
+        tempFloat = (tempFloat - 400.0f);
+        rowCount++;
+
+        transform.localScale = new Vector3(tempFloat, tempFloat, tempFloat);
+
+        Debug.Log("The tempfloat is " + tempFloat);
+        Debug.Log("Count " + rowCount);
         
 
     }//end Update()
